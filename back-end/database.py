@@ -1,5 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from utils import Result, ServerConfig
 
 Base = declarative_base()
 
@@ -79,3 +81,41 @@ class Video(Base):
             'video_url' : self.video_url,
             'record_time' : self.record_time
         }
+
+serverConfig = ServerConfig()
+my_engine = create_engine(serverConfig.SQLALCHEMY_DATABASE_URL)     # 创建连接数据库的引擎，session连接数据库需要
+metadata = MetaData(bind=my_engine)
+Base.metadata.create_all(my_engine)         # 创建表结构
+Session = sessionmaker(bind=my_engine)      # 创建一个配置过的Session类
+
+
+
+def insertUser(db, user_name, user_password, user_age, user_gender, user_phone):
+    try:
+        users = Users(username=user_name, password=user_password, age=user_age, gender=user_gender, phone=user_phone)
+        db.session.add(users)
+        db.session.commit()
+        return Result.success("插入成功")
+    except Exception as e:
+        db.session.rollback()  # 数据回滚
+        print(e)
+        return Result.fail("插入失败")
+
+
+def findUser(user_name, pass_word):
+    db_session = Session()  # 实例化一个session
+    user = db_session.query(Users).filter(and_(Users.username == user_name, Users.password == pass_word)).first()
+    db_session.close()
+    if user is not None:
+        print("查询结果：", user.username, user.password)
+        return True
+    return False
+
+
+def findAdmin(admin_name, admin_word):
+    db_session = Session()  # 实例化一个session
+    user = db_session.query(Admins).filter(Admins.username == admin_name, Admins.password == admin_word).first()
+    db_session.close()
+    if user is not None:
+        return true
+    else: return false

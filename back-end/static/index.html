@@ -60,7 +60,7 @@
             const buttonContainer = document.getElementById('buttonContainer');
             const resultDisplay = document.getElementById('resultDisplay');
             // 定义字符串数组，用于按钮命名
-            const buttonNames = ["insertUsers", "Name 2", "Name 3", "Name 4", "Name 5", "Name 6", "Name 7", "Name 8", "Name 9", "Name 10", "Name 11", "Name 12", "Name 13", "Name 14", "Name 15"];
+            const buttonNames = ["insertUsers", "isUser", "isAdmin", "Name 4", "Name 5", "Name 6", "Name 7", "Name 8", "Name 9", "Name 10", "Name 11", "Name 12", "Name 13", "Name 14", "Name 15"];
 
             buttonNames.forEach((name, index) => {
                 const button = document.createElement('button');
@@ -71,7 +71,7 @@
             });
 
             function runTest(name, index) {
-                fetch(`/test/${name}`)
+                fetch(`/api/database/${name}`)
                 .then(response => response.text())
                 .then(data => {
                     resultDisplay.innerText = `${buttonNames[index - 1]} 接口测试结果: ${data}`; // 用数组中的名称代替“Test ${testNumber}”

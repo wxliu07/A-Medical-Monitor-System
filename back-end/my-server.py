@@ -5,8 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
 import datetime
-from database import Users
+import database
 # import core.main
+from werkzeug.utils import secure_filename
 
 serverConfig = ServerConfig()
 app = Flask(__name__)
@@ -50,66 +51,53 @@ def home():
     return redirect(url_for('static', filename='./index.html'))
 
 
-@app.route('/api/database/getUserById', methods=['GET'])
-def get_user_by_id():
-    flag = False
-    if flag:
-        try:
-
-            return Result.success("测试成功")
-        except Exception as e:
-
-            print(e)
-            return Result.fail("测试失败")
-    else:
-        return Result.fail("测试失败")
-
-
-
-
-@app.route('/api/database/getAdminsById', methods=['GET'])
-def get_admin_by_id():
+@app.route('/api/database/isUser', methods=['GET'])
+def isUser():
     try:
+        print("request: ", request)
+        print("request.args", request.args)
+        username = request.args.get('username')
+        password = request.args.get('password')
+        result = database.findUser(username, password)
+        if result:
+            print('查询成功')
+            return Result.success("查询成功")
+        else:
+            print('查询失败')
+            return Result.fail("不存在用户")
+    except Exception as e:
+        print(e)
+        return Result.fail("查询失败")
 
+
+
+@app.route('/api/database/isAdmin', methods=['GET'])
+def isAdmin():
+    try:
+        database.findAdmin('liu', '123')
         return Result.success("获取成功")
     except Exception as e:
 
         print(e)
         return Result.fail("获取失败")
-
 
 
 @app.route('/api/uploadFile', methods=['POST'])
 def upload_file():
-    file = request.files['file']
-    print(datetime.datetime.now(), file.filename)
-    print(file)
-    if file:
-        # 保存文件
-        src_path = app.config['UPLOAD_FOLDER']
-        file.save(os.path.abspath(os.path.dirname(__file__)))
+    file = request.files.get('file')
+    if file is None:
+        return jsonify({'message': "文件上传失败，未接收到文件"}), 400
 
-        # 临时文件用于得到信息
-        shutil.copy(src_path, './temp') # 复制文件
+    file_name = secure_filename(file.filename)
+    if file_name == '':
+        return jsonify({'message': "文件上传失败，文件名不合法"}), 400
 
-        # temp_file_path = os.path.join('./temp', file.filename)
-        # emotion = core.main.get_emotion(temp_file_path)
-
-        return Result.success("获取成功")
-    return Result.fail("获取失败")
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    file.save(file_path)
+    return Result.success("文件上传成功")
 
 
 
-def insertUser(user_name, user_password, user_age, user_gender, user_phone):
-    try:
-        users = Users(username=user_name, password=user_password, age=user_age, gender=user_gender, phone=user_phone)
-        db.session.add(users)
-        db.session.commit()
-        return Result.success("获取成功")
-    except Exception as e:
-        db.session.rollback()  # 数据回滚
-        print(e)
-        return Result.fail("获取失败")
 
 
 if __name__ == '__main__':

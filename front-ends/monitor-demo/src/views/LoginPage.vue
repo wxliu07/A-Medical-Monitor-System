@@ -8,12 +8,12 @@
       <el-card class="login-card">
         <el-form class="login-form" label-position="left">
           <el-form-item label="账号" required>
-            <el-input placeholder="请输入账号"></el-input>
+            <el-input v-model="loginForm.username" placeholder="请输入账号"></el-input>
           </el-form-item>
           <el-form-item label="密码" required>
-            <el-input type="password" placeholder="请输入密码"></el-input>
+            <el-input v-model="loginForm.password" type="password" placeholder="请输入密码"></el-input>
           </el-form-item>
-          <el-button type="primary" class="login-button">登录</el-button>
+          <el-button :disabled="loading" type="primary" class="login-button" @click="login">登录</el-button>
           <div class="forget-section">
             <a class="forget-password">忘记密码</a>
             <a class="recover-password">立即找回</a>
@@ -29,10 +29,89 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router'; // 导入vue-router用于导航
+import { ElMessage } from 'element-plus'
+import axios from 'axios'
+
 export default {
   name: 'LoginPage',
+  setup() {
+    const router = useRouter(); // 获取router实例，用于页面跳转
+    const loginForm = ref({
+      username: '',
+      password: '',
+    }); // 创建响应式的表单数据对象
+    const loading = ref(false); // 控制按钮的加载状态
+
+
+    const loginSuccess = () => {
+      showClose: true,
+      ElMessage({
+        showClose: true,
+        message: '登陆成功',
+        type: 'success',
+        duration: 1500
+      })
+    }
+
+    const loginFail = () => {
+      ElMessage({
+        showClose: true,
+        message: '登陆失败, 用户名或密码错误.',
+        type: 'error',
+        duration: 1500,
+      })
+    }
+
+    // 登录方法
+    const login = async () => {
+      loading.value = true;
+      try {
+        console.log(event)
+        // 检查用户名和密码是否为空
+        if (!loginForm.value.username || !loginForm.value.password) {
+          throw new Error('账号和密码不能为空');
+        }
+        // 模拟登录逻辑，实际开发中应将用户数据发送到后端进行验证
+        console.log('Logging in with:', loginForm.value.username, loginForm.value.password);
+        
+        const response = axios({
+          method: 'GET',
+          url: 'http://127.0.0.1:5000/api/database/isUser',
+          params: {
+            username: loginForm.value.username,
+            password: loginForm.value.password
+          }
+        }).then((result) => {
+          if(result.data.code === 200){
+            console.log('成功');
+            loginSuccess();
+            router.push('/home'); // 使用router实例跳转，这里假设你的Home页面路由为 '/home'
+          } 
+          else {
+            loginFail()
+          }
+        }).catch((err) => {
+          console.log(err)
+        });
+        console.log(response);
+      } catch (error) {
+        alert(error.message); // 显示错误信息
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    return {
+      loginForm,
+      loading,
+      login,
+    };
+  },
 };
 </script>
+
 
 <style scoped>
 .login-container {
@@ -42,10 +121,11 @@ export default {
 }
 
 .image-section {
+  width: 80%;
   flex-grow: 1;
   background: url('../assets/images/loginBackground.png') no-repeat center center;
   background-size: cover;
-  clip-path: polygon(0 0, 100% 0, 60% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 60% 120%, 0 100%);
 }
 
 .header-text {
@@ -57,7 +137,7 @@ export default {
 }
 
 .login-section {
-  flex-basis: 500px;
+  flex-basis: 600px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -104,7 +184,7 @@ export default {
   text-align: left;
   position: absolute;
   bottom: 10px;
-  left: 50%;
+  left: 68%;
   transform: translateX(-50%);
 }
 
