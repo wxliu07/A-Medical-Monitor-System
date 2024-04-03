@@ -13,7 +13,6 @@ class ServerConfig:
         self.HTTP_PORT = str(cfg.get("server", "HTTP_PORT"))
         self.SQLALCHEMY_DATABASE_URL = str(cfg.get("server","SQLALCHEMY_DATABASE_URL"))
 
-
 # 自定义json编码器
 class MyJSONEncoder(JSONEncoder):
     def default(self, obj) -> any:
@@ -30,9 +29,15 @@ class MyJSONEncoder(JSONEncoder):
 class Result:
     @staticmethod
     def success(message):
-        return json.dumps({'code': 200, 'message': message, 'info' : '执行成功'},   # 转json对象, cls指定自定义的json编码器
+        return json.dumps({'code': 200, 'message': ' ', 'info' : message},   # 转json对象, cls指定自定义的json编码器
                           cls=MyJSONEncoder, ensure_ascii=False)        # ensure_ascii是指定是否需要ASCII编码
+
     @staticmethod
-    def fail(message):
-        return json.dumps({'code': 400, 'message': message, 'info' : '执行失败'},
+    def success_data(data, info):
+        return json.dumps({'code': 300, 'data': data, 'info' : info},
+                          cls=MyJSONEncoder, ensure_ascii=False)
+
+    @staticmethod
+    def fail(info):
+        return json.dumps({'code': 400, 'message': ' ', 'info' : info},
                           cls=MyJSONEncoder, ensure_ascii=False)
