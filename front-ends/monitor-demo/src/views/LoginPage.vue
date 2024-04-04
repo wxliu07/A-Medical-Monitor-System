@@ -126,6 +126,7 @@ export default {
   background: url('../assets/images/loginBackground.png') no-repeat center center;
   background-size: cover;
   clip-path: polygon(0 0, 100% 0, 60% 120%, 0 100%);
+  background-color: #fff;
 }
 
 .header-text {
@@ -149,8 +150,8 @@ export default {
 .login-card {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 500px;
-  margin-right: 40px;
+  max-width: 600px;
+  margin-right: 70px;
 }
 
 .login-form {

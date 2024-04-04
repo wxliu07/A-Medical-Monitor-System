@@ -1,14 +1,22 @@
 <template>
   <div class="common-layout">
     <el-container class="lay-container">
+      <!-- 左侧 -->
       <common-aside />
+
+      <!-- 右侧 -->
       <el-container>
+        <!-- 头部 -->
         <common-header />
-        <common-tab />
+        <!-- tab -->
+        <common-tab/>
+
         <el-main class="right-main">
           <router-view />
         </el-main>
+        
       </el-container>
+
     </el-container>
   </div>
 </template>
@@ -18,7 +26,7 @@
 import { defineComponent } from "vue";
 import CommonHeader from "../components/CommonHeader.vue";
 import CommonAside from "../components/CommonAside.vue";
-import CommonTab from "../components/CommonTab.vue";
+import CommonTab from "../components/CommonTab.vue"
 
 export default defineComponent({
   components: {
@@ -26,11 +34,11 @@ export default defineComponent({
     CommonAside,
     CommonTab,
   },
+
 });
 </script>
 
-
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .el-container {
   flex-wrap: wrap;
   align-items: flex-start;

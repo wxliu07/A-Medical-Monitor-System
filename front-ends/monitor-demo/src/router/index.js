@@ -1,11 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
 const routes = [
   {
+    // '/'是根路径
     path: '/',
     name: 'myhome',
-    redirect: '/home',
     component: () => import('../views/MainPage.vue'), 
+    redirect: '/home',
     children: [
       {
         path: '/home',
@@ -16,6 +17,16 @@ const routes = [
         path: '/user',
         name: 'user',
         component: () => import('../views/user/UserPage.vue')
+      },
+      {
+        path: '/data',
+        name: 'datapage1',
+        component: () => import('../views/data/DataPage1.vue')
+      },
+      {
+        path: '/data',
+        name: 'datapage2',
+        component: () => import('../views/data/DataPage2.vue')
       }
     ]
   },
@@ -27,7 +38,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(),
   routes
 })
 

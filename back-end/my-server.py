@@ -1,10 +1,8 @@
-import shutil
 from flask import *
 from utils import ServerConfig, Result
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import os
-import datetime
 import database
 # import core.main
 from werkzeug.utils import secure_filename
@@ -58,7 +56,7 @@ def isUser():
         print("request.args", request.args)
         username = request.args.get('username')
         password = request.args.get('password')
-        result = database.findUser(username, password)
+        result = database.isUser(username, password)
         if result:
             print('查询成功')
             return Result.success("查询成功")
@@ -74,12 +72,56 @@ def isUser():
 @app.route('/api/database/isAdmin', methods=['GET'])
 def isAdmin():
     try:
-        database.findAdmin('liu', '123')
+        database.isAdmin('liu', '123')
         return Result.success("获取成功")
     except Exception as e:
 
         print(e)
         return Result.fail("获取失败")
+
+
+@app.route('/api/database/getAllUsers', methods=['GET'])
+def getAllUsers():
+    try:
+        users = database.getAllUsers()
+        if users is not None:
+            return Result.success_data(data=users, info="用户成员获取成功")
+        else:
+            return Result.success(info="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail("参数异常")
+
+
+@app.route('/api/database/getMonitorData', methods=['GET'])
+def getMonitorData():
+    try:
+        uid = request.args.get("uid")
+        datas = database.getMonitorData(uid=uid)
+        if datas is not None:
+            return Result.success_data(data=datas, info="获取监测数据成功")
+        else:
+            return Result.success(info="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail("参数异常")
+
+
+
+
+@app.route('/api/database/getVideosData', methods=['GET'])
+def getVideosData():
+    try:
+        uid = request.args.get("uid")
+        datas = database.getVideos(uid=uid)
+        if datas is not None:
+            return Result.success_data(data=datas, info="获取视频数据成功")
+        else:
+            return Result.success(info="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail("参数异常")
+
 
 
 @app.route('/api/uploadFile', methods=['POST'])

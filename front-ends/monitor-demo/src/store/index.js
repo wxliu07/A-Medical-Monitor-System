@@ -1,5 +1,4 @@
 /*定义了一个Vuex存储，用于管理Vue应用的状态*/
-
 import { createStore } from 'vuex'
 import Cookie from 'js-cookie'
 
@@ -24,7 +23,7 @@ export default createStore({
   // 对象包含改变应用状态的方法
   mutations: {
     // 切换isCollapse的值
-    updateIsCollapse(state, payload) {
+    updateIsCollapse(state, payload='使用折叠') {
       console.log(payload);
       state.isCollapse = !state.isCollapse
     },

@@ -28,8 +28,8 @@ class MyJSONEncoder(JSONEncoder):
 # 结果集和定义
 class Result:
     @staticmethod
-    def success(message):
-        return json.dumps({'code': 200, 'message': ' ', 'info' : message},   # 转json对象, cls指定自定义的json编码器
+    def success(info):
+        return json.dumps({'code': 200, 'message': ' ', 'info' : info},   # 转json对象, cls指定自定义的json编码器
                           cls=MyJSONEncoder, ensure_ascii=False)        # ensure_ascii是指定是否需要ASCII编码
 
     @staticmethod

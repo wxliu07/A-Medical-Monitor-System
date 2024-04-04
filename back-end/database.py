@@ -17,7 +17,6 @@ class Users(Base):
 
     def get_json(self):
         return {
-            'user_id' : self.user_id,
             'username' : self.username,
             'password' : self.password,
             'age' : self.age,
@@ -54,13 +53,11 @@ class Datas(Base):
 
     def get_json(self):
         return {
-            'data_id' : self.data_id,
-            'user_id' : self.user_id,
             'emotion' : self.emotion,
             'hr' : self.hr,
             'rr' : self.rr,
             'spo2' : self.spo2,
-            'time' : self.time
+            'time' : str(self.time)
         }
 
 
@@ -79,7 +76,7 @@ class Video(Base):
             'user_id' : self.user_id,
             'data_id' : self.data_id,
             'video_url' : self.video_url,
-            'record_time' : self.record_time
+            'record_time' : str(self.record_time)
         }
 
 serverConfig = ServerConfig()
@@ -102,7 +99,7 @@ def insertUser(db, user_name, user_password, user_age, user_gender, user_phone):
         return Result.fail("插入失败")
 
 
-def findUser(user_name, pass_word):
+def isUser(user_name, pass_word) -> bool:
     db_session = Session()  # 实例化一个session
     user = db_session.query(Users).filter(and_(Users.username == user_name, Users.password == pass_word)).first()
     db_session.close()
@@ -112,10 +109,48 @@ def findUser(user_name, pass_word):
     return False
 
 
-def findAdmin(admin_name, admin_word):
+def isAdmin(admin_name, admin_word) -> bool:
     db_session = Session()  # 实例化一个session
-    user = db_session.query(Admins).filter(Admins.username == admin_name, Admins.password == admin_word).first()
+    user = db_session.query(Admins).filter(and_(Admins.username == admin_name, Admins.password == admin_word)).first()
     db_session.close()
     if user is not None:
-        return true
-    else: return false
+        return True
+    else: return False
+
+
+def getAllUsers():
+    db_session = Session()  # 实例化一个session
+    users = db_session.query(Users).all()
+    db_session.close()
+    result = []
+    if users is not None:
+        for user in users:
+            result.append(user.get_json())
+    return result
+
+
+
+def getMonitorData(uid):
+    db_session = Session()  # 实例化一个session
+    datas = db_session.query(Datas).filter(Datas.user_id == uid).all()
+    db_session.close()
+    result = []
+    if datas is not None:
+        for data in datas:
+            result.append(data.get_json())
+    return result
+
+
+def getVideos(uid):
+    db_session = Session()  # 实例化一个session
+    datas = db_session.query(Video).filter(Video.user_id == uid).all()
+    db_session.close()
+    result = []
+    if datas is not None:
+        for data in datas:
+            result.append(data.get_json())
+    return result
+
+
+if __name__ == '__main__':
+    print(getAllUsers())
