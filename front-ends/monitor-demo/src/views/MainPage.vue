@@ -1,22 +1,22 @@
 <template>
   <div class="common-layout">
     <el-container class="lay-container">
-      <!-- 左侧 -->
-      <common-aside />
+      <!-- 左侧主要 -->
+      <common-aside class="aside-main" />
 
-      <!-- 右侧 -->
+      <!-- 右侧主要 -->
       <el-container>
         <!-- 头部 -->
         <common-header />
-        <!-- tab -->
-        <common-tab/>
 
+        <!-- tab面包屑 -->
+        <common-tab />
+
+        <!-- 每个主界面部分 -->
         <el-main class="right-main">
           <router-view />
         </el-main>
-        
       </el-container>
-
     </el-container>
   </div>
 </template>
@@ -43,14 +43,18 @@ export default defineComponent({
   flex-wrap: wrap;
   align-items: flex-start;
   height: 100%;
+  margin-right: 5px;
 }
 
 .common-layout {
+  
   .lay-container {
+    margin-right: 0px;
     flex-wrap: nowrap;
+    
 
     .right-main {
-      height: calc(100% - 124px) !important;
+      height: 100%;
     }
   }
 
@@ -61,8 +65,11 @@ export default defineComponent({
 
     &>.el-aside {
       height: 100%;
-      background: #545c64;
     }
   }
+}
+
+.el-main {
+  padding: 0 !important; // 强制设置内边距为0
 }
 </style>

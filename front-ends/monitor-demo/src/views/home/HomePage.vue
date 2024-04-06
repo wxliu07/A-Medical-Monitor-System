@@ -1,129 +1,91 @@
 <template>
-    <el-row class="home" :gutter="20">
-        <el-col :span="8" style="margin-top: 20px">
-            <el-card shadow="hover">
-                <div class="user">
-                    <img src="../../assets/images/user.png" alt="" />
-                    <div class="user-info">
-                        <p class="name">Admin</p>
-                        <p class="role">超级管理员</p>
+    <el-row class="home">
+        <el-col :span="24">
+            <el-card shadow="always" class="user-card">
+                <div class="user-info">
+                    <img src="../../assets/images/user.png" alt="" class="user-image"/>
+                    <div>
+                        <p class="name">Mr.Liu</p>
+                        <p>上次登录时间:<span>&nbsp;&nbsp;&nbsp;&nbsp;{{ yesterday }}</span></p>
+                        <p>上次登录地点:<span>&nbsp;&nbsp;&nbsp;&nbsp;安徽·宣城</span></p>
                     </div>
                 </div>
-                <div class="login-info">
-                    <p>上次登录时间:<span>2022-7-11</span></p>
-                    <p>上次登录的地点:<span>北京</span></p>
-                </div>
             </el-card>
-
         </el-col>
 
-
-        <el-col :span="16" style="margin-top: 20px" class="right-num">
-            <el-card shadow="hover" style="margin-top: 20px" height="450px">
-                <el-table :data="monitorData">
-                    <el-table-column v-for="(val, key) in monitorTableLable" :key="key" :prop="key" :label="val">
+        <el-col class="monitor-data">
+            <el-card shadow="always" class="data-card">
+                <el-table 
+                :data="pagedTableData" 
+                border stripe 
+                :default-sort="{ prop: 'date', order: 'descending' }"
+                :header-cell-style="{ color: '#409EFF' }">
+                    <el-table-column v-for="(val, key) in monitorTableLable" :key="key" :prop="key" :label="val" >
                     </el-table-column>
                 </el-table>
+                <el-pagination
+                    layout="prev, pager, next"
+                    :total="monitorData.length"
+                    :current-page="currentPage"
+                    :page-size="8"
+                    @current-change="handlePageChange"
+                ></el-pagination>
             </el-card>
         </el-col>
-
-
-        <div>
-            <p>我是home部分</p>
-            <input id="file" type="file" @change="handleFileUpload">
-            <el-button :disabled="loading" type="primary" class="login-button" @click="uploadFile">上传文件</el-button>
-        </div>
-
     </el-row>
-
-
 </template>
 
+
 <script>
-import {
-  getCurrentInstance,
-  onMounted,
-  reactive,
-  ref,
-} from "vue";
+import { getCurrentInstance, onMounted, reactive, ref, computed  } from "vue";
 import axios from 'axios';
+import dayjs from 'dayjs';  // 确保安装了dayjs库
 
 export default {
     setup() {
-        // 定义文件状态
-        const file = ref(null);
-
-        let monitorData = ref([])
-
-        const monitorTableLable = {
+        const monitorData = ref([]);
+        const monitorTableLable = reactive({
             emotion: 'Emotion',
             hr: 'Heart Rate',
             rr: 'Respiratory Rate',
             spo2: 'SpO2',
             time: 'Time'
-        }
-        
-        const getMonitorData = () => {
-            axios({
-                method: 'GET',
-                url: 'http://127.0.0.1:5000/api/database/getMonitorData',
-                params: {
-                    uid: 1,
-                }
-            }).then(response => {
-                if (response.data && response.data.code === 300) {
-                    console.log(response.data)
-                    monitorData.value = response.data.data;
-                }
-                else {
-                    console.error(response.data.info || 'Failed to fetch monitor data');
-                }
-            }
-            )
-                .catch(error => {
-                    console.error('Error fetching monitor data:', error);
-                }
-                );
-        }
+        });
+        const currentPage = ref(1);
 
+        const yesterday = ref(dayjs().subtract(1, 'day'));
+
+        const getMonitorData = async () => {
+            try {
+                const response = await axios.get('http://127.0.0.1:5000/api/database/getMonitorData', {
+                    params: { uid: 1 }
+                });
+                monitorData.value = response.data.data;
+            } catch (error) {
+                console.error('Error fetching monitor data:', error);
+            }
+        };
+
+        const pagedTableData = computed(() => {
+            const start = (currentPage.value - 1) * 7;
+            const end = currentPage.value * 7;
+            return monitorData.value.slice(start, end);
+        });
+
+        const handlePageChange = (newPage) => {
+            currentPage.value = newPage;
+        };
 
         onMounted(() => {
             getMonitorData();
         });
 
-
-
-        // 处理文件上传
-        const handleFileUpload = (event) => {
-            file.value = event.target.files[0];
-            console.log(event)
-        };
-
-        // 上传文件
-        const uploadFile = async () => {
-            try {
-                const fileInput = document.getElementById('file'); // 假设你有一个id为file的<input type="file">
-                if (!fileInput.files[0]) {
-                    throw new Error('请选择要上传的文件');
-                }
-
-                const formData = new FormData();
-                formData.append('file', fileInput.files[0]);
-
-                const response = await axios.post('http://127.0.0.1:5000/api/uploadFile', formData);
-
-                console.log('上传成功:', response.data);
-            } catch (error) {
-                console.error('上传失败:', error.message);
-            }
-        };
-
-
         return {
-            handleFileUpload,
-            uploadFile,
             monitorData,
-            monitorTableLable
+            monitorTableLable,
+            yesterday,
+            pagedTableData,
+            handlePageChange
         };
     }
 };
@@ -132,80 +94,64 @@ export default {
 
 <style lang="less" scoped>
 .home {
-    .user {
+    width: 100%; // 确保容器占满可用宽度
+    margin: 0 auto; // 水平居中显示，如果需要
+    padding: 10px 10px 0; // 上部不留边距，左右下保留边距
+
+    .el-card {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1); // 统一的阴影样式
+        margin-bottom: 10px; // 每个卡片之间的间距
+    }
+
+    .user-info {
         display: flex;
         align-items: center;
         padding-bottom: 20px;
-        border-bottom: 1px solid #ccc;
-        margin-bottom: 20px;
+        margin-top: 0; // 减少上边距，让卡片向上靠
 
         img {
-            width: 150px;
-            height: 150px;
+            width: 100px; // 用户头像大小
+            height: 100px;
             border-radius: 50%;
-            margin-right: 40px;
+            margin-right: 20px; // 右侧间距
         }
-    }
 
-    .login-info {
+        .name {
+            font-weight: bold;
+            font-size: 24px; // 名字的字体大小
+            margin-bottom: 5px;
+        }
+
         p {
-            line-height: 30px;
-            font-size: 14px;
-            color: #999;
+            line-height: 1.5;
+            font-size: 16px;
+            color: #666;
+            margin: 0;
 
             span {
-                color: #666;
-                margin-left: 60px;
+                color: #409EFF; // 蓝色字体色彩，用于强调
             }
         }
     }
 
-    .num {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-
-        .el-card {
-            width: 32%;
-            margin-bottom: 20px;
-        }
-
-        .icons {
-            width: 80px;
-            height: 80px;
-            font-size: 30px;
-            text-align: center;
-            line-height: 80px;
-            color: #fff;
-        }
-
-        .detail {
-            margin-left: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-
-            .num {
-                font-size: 30px;
-                margin-bottom: 10px;
+    .monitor-data {
+        .el-table {
+            min-height: 300px; // 为表格设置一个最小高度
+            th {
+                background-color: #f0f2f5; // 表头背景色
             }
 
-            .txt {
-                font-size: 14px;
-                text-align: center;
-                color: #999;
+            .el-table-column {
+                text-align: center; // 列内容中心对齐
             }
-        }
-    }
-
-    .graph {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-between;
-
-        .el-card {
-            width: 48%;
         }
     }
 }
+
+.el-table .el-table__header-wrapper tr th {
+    color: #409EFF !important;
+}
+
 </style>
+
+

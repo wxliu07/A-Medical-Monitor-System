@@ -14,19 +14,34 @@ const routes = [
         component: () => import('../views/home/HomePage.vue')
       },
       {
+        path: '/monitor',
+        name: 'monitorPage',
+        component: () => import('../views/monitor/Monitor.vue')
+      },
+      {
+        path: '/data',
+        name: 'hrPage',
+        component: () => import('../views/data/HRPage.vue')
+      },
+      {
+        path: '/data',
+        name: 'rrPage',
+        component: () => import('../views/data/RRPage.vue')
+      },
+      {
+        path: '/data',
+        name: 'spo2Page',
+        component: () => import('../views/data/SpO2Page.vue')
+      },
+      {
         path: '/user',
         name: 'user',
         component: () => import('../views/user/UserPage.vue')
       },
       {
-        path: '/data',
-        name: 'datapage1',
-        component: () => import('../views/data/DataPage1.vue')
-      },
-      {
-        path: '/data',
-        name: 'datapage2',
-        component: () => import('../views/data/DataPage2.vue')
+        path: '/user',
+        name: 'usersInfo',
+        component: () => import('../views/user/AdminUsersPage.vue')
       }
     ]
   },
@@ -34,6 +49,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: () => import('../views/LoginPage.vue')
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: '404',
+    component: () => import('../views/404Page.vue')
   }
 ]
 

@@ -72,8 +72,15 @@ def isUser():
 @app.route('/api/database/isAdmin', methods=['GET'])
 def isAdmin():
     try:
-        database.isAdmin('liu', '123')
-        return Result.success("获取成功")
+        username = request.args.get('username')
+        password = request.args.get('password')
+        result = database.isAdmin(username, password)
+        if result:
+            print('查询成功')
+            return Result.success("查询成功")
+        else:
+            print('查询失败')
+            return Result.fail("不存在用户")
     except Exception as e:
 
         print(e)
@@ -85,9 +92,9 @@ def getAllUsers():
     try:
         users = database.getAllUsers()
         if users is not None:
-            return Result.success_data(data=users, info="用户成员获取成功")
+            return Result.success(data=users, desc="用户成员获取成功")
         else:
-            return Result.success(info="数据为空")
+            return Result.success(desc="数据为空")
     except Exception as e:
         print(e)
         return Result.fail("参数异常")
@@ -99,9 +106,9 @@ def getMonitorData():
         uid = request.args.get("uid")
         datas = database.getMonitorData(uid=uid)
         if datas is not None:
-            return Result.success_data(data=datas, info="获取监测数据成功")
+            return Result.success(data=datas, desc="获取监测数据成功")
         else:
-            return Result.success(info="数据为空")
+            return Result.success(desc="数据为空")
     except Exception as e:
         print(e)
         return Result.fail("参数异常")
@@ -115,9 +122,9 @@ def getVideosData():
         uid = request.args.get("uid")
         datas = database.getVideos(uid=uid)
         if datas is not None:
-            return Result.success_data(data=datas, info="获取视频数据成功")
+            return Result.success(data=datas, desc="获取视频数据成功")
         else:
-            return Result.success(info="数据为空")
+            return Result.success(desc="数据为空")
     except Exception as e:
         print(e)
         return Result.fail("参数异常")

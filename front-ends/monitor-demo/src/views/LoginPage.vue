@@ -22,7 +22,7 @@
       </el-card>
     </div>
     <div class="info-section">
-      <a href="#" class="info-link">关于项目</a>
+      <el-link :icon="Edit" type="primary" class="info-link">关于项目</el-link>
       <div class="copyright">@copyright 2024 lwx</div>
     </div>
   </div>

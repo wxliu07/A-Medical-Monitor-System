@@ -1,5 +1,5 @@
 <template>
     <div>
-        datapage1
+        SpO2Page
     </div>
 </template>
