@@ -49,6 +49,21 @@ def home():
     return redirect(url_for('static', filename='./index.html'))
 
 
+@app.route('/api/uploadFile', methods=['POST'])
+def upload_file():
+    file = request.files.get('file')
+    if file is None:
+        return jsonify({'message': "文件上传失败，未接收到文件"}), 400
+
+    file_name = secure_filename(file.filename)
+    if file_name == '':
+        return jsonify({'message': "文件上传失败，文件名不合法"}), 400
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    file.save(file_path)
+    return Result.success("文件上传成功")
+
+
 @app.route('/api/database/isUser', methods=['GET'])
 def isUser():
     try:
@@ -114,8 +129,6 @@ def getMonitorData():
         return Result.fail("参数异常")
 
 
-
-
 @app.route('/api/database/getVideosData', methods=['GET'])
 def getVideosData():
     try:
@@ -130,22 +143,46 @@ def getVideosData():
         return Result.fail("参数异常")
 
 
-
-@app.route('/api/uploadFile', methods=['POST'])
-def upload_file():
-    file = request.files.get('file')
-    if file is None:
-        return jsonify({'message': "文件上传失败，未接收到文件"}), 400
-
-    file_name = secure_filename(file.filename)
-    if file_name == '':
-        return jsonify({'message': "文件上传失败，文件名不合法"}), 400
-
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
-    file.save(file_path)
-    return Result.success("文件上传成功")
+@app.route('/api/database/getHrDataByUid', methods=['GET'])
+def getHrDataByUid():
+    try:
+        uid = request.args.get("uid")
+        datas = database.getHrByUid(uid=uid)
+        if datas is not None:
+            return Result.success(data=datas, desc="获取HR数据成功")
+        else:
+            return Result.success(desc="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail("参数异常")
 
 
+@app.route('/api/database/getRrDataByUid', methods=['GET'])
+def getRrDataByUid():
+    try:
+        uid = request.args.get("uid")
+        datas = database.getRrByUid(uid=uid)
+        if datas is not None:
+            return Result.success(data=datas, desc="获取HR数据成功")
+        else:
+            return Result.success(desc="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail("参数异常")
+
+
+@app.route('/api/database/getSpO2DataByUid', methods=['GET'])
+def getSpO2DataByUid():
+    try:
+        uid = request.args.get("uid")
+        datas = database.getSpO2ByUid(uid=uid)
+        if datas is not None:
+            return Result.success(data=datas, desc="获取HR数据成功")
+        else:
+            return Result.success(desc="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail("参数异常")
 
 
 

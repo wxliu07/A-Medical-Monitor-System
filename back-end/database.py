@@ -140,7 +140,6 @@ def getMonitorData(uid):
             result.append(data.get_json())
     return result
 
-
 def getVideos(uid):
     db_session = Session()  # 实例化一个session
     datas = db_session.query(Video).filter(Video.user_id == uid).all()
@@ -152,5 +151,63 @@ def getVideos(uid):
     return result
 
 
+def getHrByUid(uid):
+    db_session = Session()  # 实例化一个session
+    result = []
+    try:
+        heart_rate_info = db_session.query(Datas.hr, Datas.time)\
+                                    .join(Users, Users.user_id == Datas.user_id)\
+                                    .filter(Users.user_id == uid).all()
+        for info in heart_rate_info:
+            hr_data = {
+                'hr': info.hr,
+                'time': str(info.time)
+            }
+            result.append(hr_data)
+    except Exception as e:
+        print(f"错误: {e}")
+    finally:
+        db_session.close()
+    return result
+
+def getRrByUid(uid):
+    db_session = Session()  # 实例化一个session
+    result = []
+    try:
+        rr_info = db_session.query(Datas.rr, Datas.time)\
+                                    .join(Users, Users.user_id == Datas.user_id)\
+                                    .filter(Users.user_id == uid).all()
+        for info in rr_info:
+            hr_data = {
+                'rr': info.rr,
+                'time': str(info.time)
+            }
+            result.append(hr_data)
+    except Exception as e:
+        print(f"错误: {e}")
+    finally:
+        db_session.close()
+    return result
+
+def getSpO2ByUid(uid):
+    db_session = Session()  # 实例化一个session
+    result = []
+    try:
+        spo2_info = db_session.query(Datas.spo2, Datas.time)\
+                                    .join(Users, Users.user_id == Datas.user_id)\
+                                    .filter(Users.user_id == uid).all()
+        for info in spo2_info:
+            hr_data = {
+                'spo2': info.spo2,
+                'time': str(info.time)
+            }
+            result.append(hr_data)
+    except Exception as e:
+        print(f"错误: {e}")
+    finally:
+        db_session.close()
+    return result
+
+
 if __name__ == '__main__':
-    print(getAllUsers())
+    print(getSpO2ByUid(1))

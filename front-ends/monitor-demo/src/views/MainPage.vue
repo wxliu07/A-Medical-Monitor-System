@@ -12,6 +12,8 @@
         <!-- tab面包屑 -->
         <common-tab />
 
+        <el-divider class="mydivider" />
+
         <!-- 每个主界面部分 -->
         <el-main class="right-main">
           <router-view />
@@ -72,4 +74,10 @@ export default defineComponent({
 .el-main {
   padding: 0 !important; // 强制设置内边距为0
 }
+
+.mydivider {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
 </style>

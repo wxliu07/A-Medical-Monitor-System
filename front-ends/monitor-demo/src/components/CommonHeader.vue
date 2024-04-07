@@ -1,18 +1,22 @@
 <template>
-  <el-header >
+  <el-header>
     <div class="l-content">
-       <!-- 在按钮左边添加文本 -->
-       <div class="welcome-texts">
+      <!-- 在按钮左边添加文本 -->
+      <div class="welcome-texts">
         <div class="welcome">Good Morning Mr.Liu!</div>
         <div class="user-greeting">Hello Mr.Liu, welcome back!</div>
       </div>
 
-      <!-- 图标的展示 -->
-      <el-button size="small" plain @click="handleCollapse">
-        <el-icon :size="20">
-          <Menu />
-        </el-icon>
-      </el-button>
+
+
+      <el-tooltip content="点击展开或收缩侧边栏" placement="right" effect="light">
+        <!-- 图标的展示 -->
+        <el-button size="small" plain @click="handleCollapse">
+          <el-icon :size="20">
+            <Menu />
+          </el-icon>
+        </el-button>
+      </el-tooltip>
 
 
 
@@ -32,8 +36,10 @@
     <div class="r-content">
       <el-input placeholder="输入搜索内容" style="width: 280px" prefix-icon="el-icon-search">
         <template #prefix>
-        <el-icon class="el-input__icon"><search /></el-icon>
-      </template>
+          <el-icon class="el-input__icon">
+            <search />
+          </el-icon>
+        </template>
       </el-input>
       <!-- 用户信息和下拉菜单 -->
       <el-dropdown>
@@ -44,6 +50,8 @@
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item>个人中心</el-dropdown-item>
+
+
             <el-dropdown-item @click="handleLoginOut">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
@@ -61,7 +69,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 export default {
-  setup(){
+  setup() {
     const store = useStore();
     const router = useRouter();
 
@@ -160,9 +168,9 @@ header {
   cursor: pointer !important;
 }
 
-:deep(.el-dropdown-menu) {
-  box-shadow: none !important; /* 移除阴影 */
-  border: none !important; /* 移除边框 */
+.el-dropdown-link:focus {
+  outline: none;
+  border: none;
+  /* 如果需要 */
 }
-
 </style>

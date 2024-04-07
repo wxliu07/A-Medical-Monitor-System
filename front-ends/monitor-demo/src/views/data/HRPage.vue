@@ -1,33 +1,118 @@
 <template>
-    <div>
-        HRPage
-        <el-button type="primary" class="login-button" @click="isAdmin">测试</el-button>
-    </div>
+    <el-card class="echarts-card">
+        <div ref="chart" style="width: 100%; height: 400px;"></div>
+    </el-card>
 </template>
 
 <script>
-import { getCurrentInstance } from 'vue'
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import * as echarts from 'echarts';
 
 export default {
     setup() {
-        const { proxy } = getCurrentInstance(); // vue3不能用this了
-        const isAdmin = async () => {
+        const chart = ref(null);
+
+        onMounted(async () => {
             try {
-                let res = await proxy.$api.isAdmin({
-                    username: 'liu',
-                    password: '123'
-                })
-                console.log(res)
+                const response = axios({
+                    method: 'GET',
+                    url: 'http://127.0.0.1:5000/api/database/getHrDataByUid',
+                    params: {
+                        uid: 1
+                    }
+                }).then((result) => {
+                    if (result.data.code === 200) {
+                        console.log(result.data.data);
+                        const data = result.data.data;
+                        initChart(data)
+                    }
+                    else {
+                        console.log('失败');
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                });
 
             } catch (error) {
-                console.log(error)
+                console.error('Error fetching data:', error);
             }
+        });
+
+        function initChart(data) {
+            const hrValues = data.map(item => item.hr);
+            const minHr = Math.min(...hrValues) - 15;
+            const maxHr = Math.max(...hrValues) + 15;
+
+            const myChart = echarts.init(chart.value);
+            myChart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                },
+                xAxis: {
+                    type: 'category',
+                    data: data.map(item => item.time),
+                    axisLabel: {
+                        show: false,
+                    },
+                    axisTick: {
+                        show: false,
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#999',
+                        },
+                    },
+                },
+                yAxis: {
+                    type: 'value',
+                    min: minHr,
+                    max: maxHr,
+                    axisLabel: {
+                        formatter: '{value} bpm',
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#999',
+                        },
+                    },
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                        },
+                    },
+                },
+                series: [{
+                    data: hrValues,
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: false,
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0, color: 'lightblue'
+                        }, {
+                            offset: 1, color: 'white'
+                        }])
+                    },
+                }],
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true,
+                },
+            });
         }
 
         return {
-            isAdmin
-        }
-    }
+            chart,
+        };
+    },
 };
-
 </script>
+
+<style scoped>
+.echarts-card {
+    margin: 30px 0;
+}
+</style>

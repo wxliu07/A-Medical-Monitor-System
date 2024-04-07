@@ -50,47 +50,47 @@ export default {
         path: "/home",
         name: "home",
         label: "首页",
-        icon: "user",
+        icon: "HomeFilled",
         url: "UserManage/UserManage",
       },
       {
         path: "/user",
         name: "user",
         label: "个人信息",
-        icon: "user",
+        icon: "UserFilled",
         url: "UserManage/UserManage",
       },
       {
         path: "/monitorPage",
         name: "monitorPage",
         label: "信息监测",
-        icon: "user",
+        icon: "Platform",
         url: "UserManage/UserManage",
       },
       {
         path: "/other",
         label: "数据纵览",
-        icon: "location",
+        icon: "Operation",
         children: [
           {
             path: "/hrPage",
             name: "hrPage",
             label: "心率",
-            icon: "setting",
+            icon: "DArrowRight",
             url: "Other/PageOne",
           },
           {
             path: "/rrPage",
             name: "rrPage",
             label: "呼吸率",
-            icon: "setting",
+            icon: "DArrowRight",
             url: "Other/PageTwo",
           },
           {
             path: "/spo2Page",
             name: "spo2Page",
             label: "血氧饱和度",
-            icon: "setting",
+            icon: "DArrowRight",
             url: "Other/PageTwo",
           },
         ],
@@ -136,7 +136,7 @@ export default {
 
 <style lang="scss" scoped>
 .common-layout {
-  background-color: #FAFAFA; // 设置整个布局的背景颜色为#FAFAFA
+  background-color:  #FAFCFF; // 设置整个布局的背景颜色为#FAFAFA
   box-shadow: 0.5px 1px 3px rgba(0, 0, 0, 0.4);
   margin-right: 8px;
 }
@@ -151,7 +151,7 @@ export default {
 
 .el-menu {
   border-right: none;
-  background-color: #FAFAFA;
+  background-color: #FAFCFF;
 
   .el-menu-item,
   .el-sub-menu .el-menu-item-group .el-menu-item {

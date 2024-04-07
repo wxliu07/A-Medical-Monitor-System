@@ -2,6 +2,9 @@
     <el-row class="home">
         <el-col :span="24">
             <el-card shadow="always" class="user-card">
+            <!-- 使用Flex布局容器包裹用户信息和描述信息 -->
+            <div class="card-content">
+                <!-- 用户信息部分 -->
                 <div class="user-info">
                     <img src="../../assets/images/user.png" alt="" class="user-image"/>
                     <div>
@@ -10,7 +13,16 @@
                         <p>上次登录地点:<span>&nbsp;&nbsp;&nbsp;&nbsp;安徽·宣城</span></p>
                     </div>
                 </div>
-            </el-card>
+                <!-- 描述信息部分 -->
+                <el-descriptions title="Last Monitoring:" class="user-descriptions">
+                    <el-descriptions-item label="HR:">88 BPM</el-descriptions-item>
+                    <el-descriptions-item label="RR:">15 BPM</el-descriptions-item>
+                    <el-descriptions-item label="SpO2:"> 96 BPM
+                    </el-descriptions-item>
+                    <el-descriptions-item label="Time: ">{{ yesterday }}</el-descriptions-item>
+                </el-descriptions>
+            </div>
+        </el-card>
         </el-col>
 
         <el-col class="monitor-data">
@@ -20,16 +32,21 @@
                 border stripe 
                 :default-sort="{ prop: 'date', order: 'descending' }"
                 :header-cell-style="{ color: '#409EFF' }">
+                
                     <el-table-column v-for="(val, key) in monitorTableLable" :key="key" :prop="key" :label="val" >
                     </el-table-column>
+                    
                 </el-table>
+
                 <el-pagination
                     layout="prev, pager, next"
                     :total="monitorData.length"
                     :current-page="currentPage"
                     :page-size="8"
                     @current-change="handlePageChange"
-                ></el-pagination>
+                >
+                
+            </el-pagination>
             </el-card>
         </el-col>
     </el-row>
@@ -85,7 +102,8 @@ export default {
             monitorTableLable,
             yesterday,
             pagedTableData,
-            handlePageChange
+            handlePageChange,
+            currentPage
         };
     }
 };
@@ -151,6 +169,19 @@ export default {
 .el-table .el-table__header-wrapper tr th {
     color: #409EFF !important;
 }
+
+.card-content {
+    display: flex;
+    justify-content: space-between; /* 确保子元素之间有空间 */
+    align-items: flex-start; /* 对齐到顶部 */
+}
+
+.user-descriptions {
+    flex-grow: 1; /* 允许描述信息部分占据剩余空间 */
+    margin-top: 10px;
+    margin-left: 40px; /* 与用户信息部分保持间距 */
+}
+
 
 </style>
 
