@@ -1,6 +1,7 @@
 from sqlalchemy import *
-from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.declarative import declarative_base   # sqlalchemy 2.x 版本被弃用
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base
 from utils import Result, ServerConfig
 
 Base = declarative_base()
@@ -81,7 +82,6 @@ class Video(Base):
 
 serverConfig = ServerConfig()
 my_engine = create_engine(serverConfig.SQLALCHEMY_DATABASE_URL)     # 创建连接数据库的引擎，session连接数据库需要
-metadata = MetaData(bind=my_engine)
 Base.metadata.create_all(my_engine)         # 创建表结构
 Session = sessionmaker(bind=my_engine)      # 创建一个配置过的Session类
 
@@ -99,23 +99,24 @@ def insertUser(db, user_name, user_password, user_age, user_gender, user_phone):
         return Result.fail("插入失败")
 
 
-def isUser(user_name, pass_word) -> bool:
+def isUser(user_name, pass_word):
     db_session = Session()  # 实例化一个session
     user = db_session.query(Users).filter(and_(Users.username == user_name, Users.password == pass_word)).first()
     db_session.close()
     if user is not None:
         print("查询结果：", user.username, user.password)
-        return True
-    return False
+        return user.get_json()
+    return {}
 
 
-def isAdmin(admin_name, admin_word) -> bool:
+def isAdmin(admin_name, admin_word):
     db_session = Session()  # 实例化一个session
     user = db_session.query(Admins).filter(and_(Admins.username == admin_name, Admins.password == admin_word)).first()
     db_session.close()
     if user is not None:
-        return True
-    else: return False
+        print("查询结果：", user.username, user.password)
+        return user.get_json()
+    return {}
 
 
 def getAllUsers():
@@ -165,7 +166,7 @@ def getHrByUid(uid):
             }
             result.append(hr_data)
     except Exception as e:
-        print(f"错误: {e}")
+        print("错误: {}".format(e))
     finally:
         db_session.close()
     return result
@@ -184,7 +185,7 @@ def getRrByUid(uid):
             }
             result.append(hr_data)
     except Exception as e:
-        print(f"错误: {e}")
+        print("错误: {}".format(e))
     finally:
         db_session.close()
     return result
@@ -203,11 +204,13 @@ def getSpO2ByUid(uid):
             }
             result.append(hr_data)
     except Exception as e:
-        print(f"错误: {e}")
+        print("错误: {}".format(e))
     finally:
         db_session.close()
     return result
 
 
 if __name__ == '__main__':
-    print(getSpO2ByUid(1))
+    print(isUser('liu', 123))
+
+    # print(getSpO2ByUid(1))

@@ -53,15 +53,14 @@ def home():
 def upload_file():
     file = request.files.get('file')
     if file is None:
-        return jsonify({'message': "文件上传失败，未接收到文件"}), 400
-
+        return Result.fail(desc="文件上传失败，未接收到文件")
     file_name = secure_filename(file.filename)
     if file_name == '':
-        return jsonify({'message': "文件上传失败，文件名不合法"}), 400
+        return Result.fail(desc="文件上传失败，文件名不合法")
 
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
     file.save(file_path)
-    return Result.success("文件上传成功")
+    return Result.success(desc="文件上传成功")
 
 
 @app.route('/api/database/isUser', methods=['GET'])
@@ -72,16 +71,15 @@ def isUser():
         username = request.args.get('username')
         password = request.args.get('password')
         result = database.isUser(username, password)
-        if result:
+        if result is not None:
             print('查询成功')
-            return Result.success("查询成功")
+            return Result.success(data=result, desc="查询成功")
         else:
-            print('查询失败')
-            return Result.fail("不存在用户")
+            print('查询失败, 不存在用户')
+            return Result.fail(desc="查询失败, 不存在此用户")
     except Exception as e:
         print(e)
-        return Result.fail("查询失败")
-
+        return Result.fail(desc="参数有误")
 
 
 @app.route('/api/database/isAdmin', methods=['GET'])
@@ -90,16 +88,15 @@ def isAdmin():
         username = request.args.get('username')
         password = request.args.get('password')
         result = database.isAdmin(username, password)
-        if result:
+        if result is not None:
             print('查询成功')
-            return Result.success("查询成功")
+            return Result.success(data=result, desc="查询成功")
         else:
-            print('查询失败')
-            return Result.fail("不存在用户")
+            print('查询失败, 不存在用户')
+            return Result.fail(desc="查询失败, 不存在此用户")
     except Exception as e:
-
         print(e)
-        return Result.fail("获取失败")
+        return Result.fail(desc="参数有误")
 
 
 @app.route('/api/database/getAllUsers', methods=['GET'])
@@ -112,7 +109,7 @@ def getAllUsers():
             return Result.success(desc="数据为空")
     except Exception as e:
         print(e)
-        return Result.fail("参数异常")
+        return Result.fail(desc="参数异常")
 
 
 @app.route('/api/database/getMonitorData', methods=['GET'])
@@ -140,7 +137,7 @@ def getVideosData():
             return Result.success(desc="数据为空")
     except Exception as e:
         print(e)
-        return Result.fail("参数异常")
+        return Result.fail(desc="参数异常")
 
 
 @app.route('/api/database/getHrDataByUid', methods=['GET'])
@@ -154,7 +151,7 @@ def getHrDataByUid():
             return Result.success(desc="数据为空")
     except Exception as e:
         print(e)
-        return Result.fail("参数异常")
+        return Result.fail(desc="参数异常")
 
 
 @app.route('/api/database/getRrDataByUid', methods=['GET'])
