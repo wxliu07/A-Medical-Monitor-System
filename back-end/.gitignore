@@ -4,7 +4,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-models/
+core/models/
 .idea
 # C extensions
 *.so

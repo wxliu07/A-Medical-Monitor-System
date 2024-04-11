@@ -26,6 +26,8 @@ class MyJSONEncoder(JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 # 结果集和定义
+# data: 列表
+# desc: 字符串
 class Result:
     @staticmethod
     def success(data=None, desc=''):

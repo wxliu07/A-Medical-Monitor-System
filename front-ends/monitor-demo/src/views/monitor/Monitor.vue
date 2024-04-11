@@ -46,7 +46,7 @@
               <div class="el-upload__text">
                 拖拽文件到此处 <em>或点击此处按钮进行上传</em>
               </div>
-              <el-button size="large" type="primary">点击上传</el-button>
+              <!-- <el-button size="large" type="primary">点击上传</el-button> -->
               <template #tip>
                 <div class="el-upload__tip">
                   请选择人脸面部视频文件进行上传
@@ -65,11 +65,6 @@
         </el-card>
       </el-tab-pane>
     </el-tabs>
-
-
-
-
-
   </el-col>
 </template>
 
