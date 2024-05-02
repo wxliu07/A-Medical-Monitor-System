@@ -4,8 +4,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-core/models/
-core/video/
+core/models/*.pth
+core/models/*.dat
+core/models/*.pkl
+core/models/*.mov
+core/video/*.avi
+core/video/*.MP4
+core/video/*.hdf5
 .idea
 # C extensions
 *.so
