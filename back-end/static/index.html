@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>医疗辅助监护系统</title>
+<!--    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='home_icon.svg') }}">-->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        #testBox {
+            margin: auto;
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        #buttonContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .testButton {
+            padding: 10px 20px;
+            margin: 5px 0; /* 更紧凑的垂直间距 */
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width:120px
+        }
+        .testButton:hover {
+            background-color: #0056b3;
+        }
+        #resultDisplay {
+            flex-grow: 1;
+            margin-left: 20px; /* 与按钮容器的间距 */
+            padding: 20px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: block; /* 始终可见 */
+        }
+    </style>
+</head>
+<body>
+    <div id="testBox">
+        <div id="buttonContainer"></div>
+        <div id="resultDisplay">待测试</div>
+    </div>
+
+   <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttonContainer = document.getElementById('buttonContainer');
+            const resultDisplay = document.getElementById('resultDisplay');
+            // 定义字符串数组，用于按钮命名
+            const buttonNames = ["insertUsers", "isUser", "isAdmin", "Name 4", "Name 5", "Name 6", "Name 7", "Name 8", "Name 9", "Name 10", "Name 11", "Name 12", "Name 13", "Name 14", "Name 15"];
+
+            buttonNames.forEach((name, index) => {
+                const button = document.createElement('button');
+                button.className = 'testButton';
+                button.innerText = name; // 使用数组中的名称作为按钮文本
+                button.onclick = function() { runTest(name, index+1); };
+                buttonContainer.appendChild(button);
+            });
+
+            function runTest(name, index) {
+                fetch(`/api/database/${name}`)
+                .then(response => response.text())
+                .then(data => {
+                    resultDisplay.innerText = `${buttonNames[index - 1]} 接口测试结果: ${data}`; // 用数组中的名称代替“Test ${testNumber}”
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+   </script>
+
+</body>
+</html>
