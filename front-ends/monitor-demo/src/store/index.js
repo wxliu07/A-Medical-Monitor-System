@@ -12,7 +12,8 @@ export default createStore({
         path: '/',
         name: 'home',
         label: '首页',
-        icon: 'home'
+        icon: 'home',
+        url: 'home/HomePage'
       }
     ],                  // 存储打开的标签页信息
     menu: [],           // 存储菜单项的数组
@@ -61,6 +62,7 @@ export default createStore({
         return
       }
       const menu = JSON.parse(localStorage.getItem('menu'))
+      console.log(menu)
       state.menu = menu
 
       const menuArray = []
@@ -68,14 +70,17 @@ export default createStore({
       menu.forEach(item => {
         if (item.children) {
           item.children = item.children.map(item => {
-            let url = `../views/${item.url}.vue`
-
+           
+          let url = `../views/${item.url}.vue`
+            console.log(url)
             item.component = () => import(url)
             return item
           })
           menuArray.push(...item.children)
         } else {
+         
           let url = `../views/${item.url}.vue`
+          console.log("else: "+url)
           item.component = () => import(url)
           menuArray.push(item)
         }
@@ -107,6 +112,10 @@ export default createStore({
     // 从state或Cookie中获取token
     getToken(state) {
       state.token = state.token || Cookie.get('token')
+    },
+
+    clearTabsList(state) {
+      state.tabsList = [];  // 清空tabsList数组
     }
 
   },

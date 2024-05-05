@@ -17,6 +17,8 @@
 <script>
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
+import { onBeforeUnmount } from 'vue'
+
 export default {
   setup() {
     const store = useStore();
@@ -26,6 +28,7 @@ export default {
     const changeMenu = (item) => {
       router.push({ name: item.name });
     };
+
     const handleClose = (tag, index) => {
       let length = tags.length - 1;
       // 处理vuex中的tabslist
@@ -45,6 +48,11 @@ export default {
         });
       }
     };
+
+    onBeforeUnmount(() =>  {
+      store.commit('clearTabsList')
+    });
+
     return {
       tags,
       changeMenu,

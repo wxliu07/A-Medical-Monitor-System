@@ -3,7 +3,9 @@ import numpy as np
 import scipy
 from scipy import signal
 from scipy.signal import find_peaks, savgol_filter
-from Siamfc import TrackerSiamFC
+from core.net.Siamfc import TrackerSiamFC
+from tqdm import *
+
 
 # 呼吸率对应的频率:0.15-0.40Hz，参考论文: https://www.nature.com/articles/s41598-019-53808-9
 RR_Min_HZ = 0.15  # 根据数据分布调整呼吸率滤波范围
@@ -91,7 +93,7 @@ def detrend(X, detLambda=10):  # new detrend
 
 # 对输入的信号进行标准化(归一化)处理，并返回标准化后的信号
 def normalize(signals):
-    print('func:normalize>>{},type:{}'.format(signals, type(signals)))
+    # print('func:normalize>>{},type:{}'.format(signals, type(signals)))
     if np.all(signals == 0) or len(signals) == 0:
         return signals
     mean = np.mean(signals)
@@ -170,8 +172,8 @@ def eliminate_abnormal_peaks(index_arr, PPG_nose, rate, total_num, fps):
     # 波峰限制
     max_value_peak = avg_value_peaks + avg_value_peaks * rate
     min_value_peak = avg_value_peaks - avg_value_peaks * rate
-    print('max_value_peak:', max_value_peak)
-    print('min_value_peak:', min_value_peak)
+    # print('max_value_peak:', max_value_peak)
+    # print('min_value_peak:', min_value_peak)
 
     rr_peak_count = 0  # PPG_nose信号中的累加波峰个数
     peak_index = []  # 波峰索引
@@ -188,11 +190,13 @@ def eliminate_abnormal_peaks(index_arr, PPG_nose, rate, total_num, fps):
             peak_distance_sum.append(peak_distance)
 
     avg_peak_dis = np.mean(peak_distance)  # 相邻波峰之间的平均距离
-
     # 计算PPG_nose信号的小数部分
     decimal = (total_num - peak_index[len(peak_index) - 1] + peak_index[0]) / avg_peak_dis
     # 计算一分钟的呼吸率
     rr_value = (rr_peak_count + decimal - 1) / total_num * (fps * 60)
+
+    # rr_value = (rr_peak_count - 1) / total_num * (fps * 60)
+
 
     return rr_value
 
@@ -280,7 +284,7 @@ def main():
     total_num = len(img_arr)
     ppg_infrared_nose = []
     face_mark = 0
-    for i in range(total_num):
+    for i in tqdm(range(total_num)):
         image = img_arr[i]
         # Flip the image horizontally for a later selfie-view display, and convert
         # the BGR image to RGB.

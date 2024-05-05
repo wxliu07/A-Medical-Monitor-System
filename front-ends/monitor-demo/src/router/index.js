@@ -42,6 +42,21 @@ const routes = [
         path: '/user',
         name: 'usersInfo',
         component: () => import('../views/user/AdminUsersPage.vue')
+      },
+      {
+        path: '/userControlPage',
+        name: 'userControlPage',
+        component: () => import('../views/admin/UsersControlPage.vue')
+      },
+      {
+        path: '/userInfolPage',
+        name: 'userInfolPage',
+        component: () => import('../views/admin/UserInfoPage.vue')
+      },
+      {
+        path: '/usersVideoPage',
+        name: 'usersVideoPage',
+        component: () => import('../views/admin/UsersVideoPage.vue')
       }
     ]
   },

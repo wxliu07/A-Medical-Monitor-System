@@ -19,22 +19,23 @@ service.interceptors.request.use((req) => {
 // 在请求之后做一些事情
 service.interceptors.response.use((res) => {
     console.log(res);
-    const { code, data, msg } = res.data
+    console.log(res.data);
+    const { code, data, desc } = res.data
     if (code == 200) {
-        return data
+        return data     // 直接返回数据
     } 
     else {
         // 网络请求错误
-        ElMessage.error(msg || NETWORK_ERROR)
-        return Promise.reject(msg || NETWORK_ERROR)
+        ElMessage.error(desc || NETWORK_ERROR)
+        return Promise.reject(desc || NETWORK_ERROR)
     }
 })
 
 
-// axios参数调整
+// axios参数检查和调整
 function request(options) {
-    options.method = options.method || 'get'    // 默认get方式
-    if (options.method.toLowerCase() == 'get') {
+    options.method = options.method || 'GET'    // 默认get方式
+    if (options.method.toLowerCase() == 'GET') {
         options.params = options.data
       }
     

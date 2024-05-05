@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
     while True:
         # grab a frame -> face detection -> crop the face -> 68 facial landmarks -> get mask from those landmarks
-
+        # 抓取相框 - >人脸检测 - >裁剪脸部 - > 68 个面部地标 >从这些地标中获取面具
         # calculate time for each loop
         t0 = time.time()
 
@@ -210,8 +210,8 @@ if __name__ == "__main__":
             # filtered_data = sp.butter_bandpass_filter(interpolated_data, 0.8, 3, fps, order = 3)
 
         # write to txt file
-        with open("a.txt", mode="a+") as f:
-            f.write("time: {0:.4f} ".format(times[-1]) + ", HR: {0:.2f} ".format(bpm) + "\n")
+        # with open("a.txt", mode="a+") as f:
+        #     f.write("time: {0:.4f} ".format(times[-1]) + ", HR: {0:.2f} ".format(bpm) + "\n")
 
         # display
         cv2.imshow("frame", frame)

@@ -20,7 +20,7 @@ export default {
     getMenu(params) {
         return request({
           url: '/permission/getMenu',
-          method: 'post',
+          method: 'GET',
           // 这个mock如果是true的话 用的就是线上fastmock的数据
           data: params
         })

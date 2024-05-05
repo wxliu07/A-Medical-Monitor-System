@@ -10,7 +10,6 @@ class SignalProcessing:
         """
         从 ROI 中提取绿色的平均值
         """
-        # r = np.mean(ROI[:,:,0])
         g = []
         for ROI in ROIs:
             g.append(np.mean(ROI[:, :, 1]))
@@ -23,10 +22,8 @@ class SignalProcessing:
         """
         规范化输入数据缓冲区
         """
-
         # normalized_data = (data_buffer - np.mean(data_buffer))/np.std(data_buffer)
         normalized_data = data_buffer / np.linalg.norm(data_buffer)
-
         return normalized_data
 
     def signal_detrending(self, data_buffer):
@@ -34,7 +31,6 @@ class SignalProcessing:
         删除整体趋势
         """
         detrended_data = signal.detrend(data_buffer)
-
         return detrended_data
 
     def interpolation(self, data_buffer, times):
@@ -42,7 +38,6 @@ class SignalProcessing:
         插值数据缓冲器，使信号变得更加周期性（无频谱泄漏）
         """
         buffer_len = len(data_buffer)
-
         even_times = np.linspace(times[0], times[-1], buffer_len)
 
         interp = np.interp(even_times, times, data_buffer)
@@ -50,11 +45,8 @@ class SignalProcessing:
         return interpolated_data
 
     def fft(self, data_buffer, fps):
-
         buffer_len = len(data_buffer)
-
         freqs = float(fps) / buffer_len * np.arange(buffer_len / 2 + 1)
-
         freqs_in_minute = 60. * freqs
 
         raw_fft = np.fft.rfft(data_buffer * 30)

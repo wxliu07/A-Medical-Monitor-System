@@ -3,15 +3,17 @@ import os
 import configparser
 from flask.json import JSONEncoder
 
+
 # 数据库和服务器配置内容
 class ServerConfig:
     def __init__(self):
         cfg = configparser.ConfigParser()
-        file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "server.conf") # 配置文件地址
+        file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "server.conf")  # 配置文件地址
         cfg.read(file)  # 读取配置文件
         self.SERVER_IP = str(cfg.get("server", "SERVER_IP"))
         self.HTTP_PORT = str(cfg.get("server", "HTTP_PORT"))
-        self.SQLALCHEMY_DATABASE_URL = str(cfg.get("server","SQLALCHEMY_DATABASE_URL"))
+        self.SQLALCHEMY_DATABASE_URL = str(cfg.get("server", "SQLALCHEMY_DATABASE_URL"))
+
 
 # 自定义json编码器
 class MyJSONEncoder(JSONEncoder):
@@ -22,21 +24,25 @@ class MyJSONEncoder(JSONEncoder):
             return str(obj, encoding='utf-8')
         # 对象类型
         if isinstance(obj, object):
-            return obj.get_json()   # 需要自定义get_json方法, 涉及数据集类的操作
+            return obj.get_json()  # 需要自定义get_json方法, 涉及数据集类的操作
         return json.JSONEncoder.default(self, obj)
 
+
 # 结果集和定义
-# data: 列表
-# desc: 字符串
 class Result:
     @staticmethod
     def success(data=None, desc=''):
+        """
+        :param data:    请求体
+        :param desc:    描述内容
+        :return:        json格式结果
+        """
         if data is None:
             data = []
-        return json.dumps({'code': 200, 'data': data, 'desc' : desc},   # 转json对象, cls指定自定义的json编码器
-                          cls=MyJSONEncoder, ensure_ascii=False)        # ensure_ascii是指定是否需要ASCII编码
+        return json.dumps({'code': 200, 'data': data, 'desc': desc},  # 转json对象, cls指定自定义的json编码器
+                          cls=MyJSONEncoder, ensure_ascii=False)  # ensure_ascii是指定是否需要ASCII编码
 
     @staticmethod
     def fail(desc=''):
-        return json.dumps({'code': 400, 'message': ' ', 'desc' : desc},
+        return json.dumps({'code': 400, 'message': ' ', 'desc': desc},
                           cls=MyJSONEncoder, ensure_ascii=False)

@@ -3,7 +3,7 @@ from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
 from utils import Result, ServerConfig
-
+from datetime import datetime
 Base = declarative_base()
 
 
@@ -100,24 +100,42 @@ def insertUser(db, user_name, user_password, user_age, user_gender, user_phone):
         return Result.fail("插入失败")
 
 
+def insertDatas(user_id, emotion, hr, rr, spo2, time):
+    try:
+        db_session = Session()  # 实例化一个session
+        data = Datas(user_id=user_id, emotion=emotion, hr=hr, rr=rr, spo2=spo2, time=time)
+        # users = Users(username=user_name, password=user_password, age=user_age, gender=user_gender, phone=user_phone)
+        db_session.add(data)
+        db_session.commit()
+        return Result.success("插入成功")
+    except Exception as e:
+        db_session.rollback()  # 数据回滚
+        print(e)
+        return Result.fail("插入失败")
+
+
 def isUser(user_name, pass_word):
+    if user_name is None or pass_word is None:
+        return False  # 提前返回空字典，表示没有提供有效的认证信息
     db_session = Session()  # 实例化一个session
     user = db_session.query(Users).filter(and_(Users.username == user_name, Users.password == pass_word)).first()
     db_session.close()
     if user is not None:
         print("查询结果：", user.username, user.password)
-        return user.get_json()
-    return {}
+        return True
+    return False
 
 
 def isAdmin(admin_name, admin_word):
+    if admin_name is None or admin_word is None:
+        return False  # 提前返回空字典，表示没有提供有效的认证信息
     db_session = Session()  # 实例化一个session
     user = db_session.query(Admins).filter(and_(Admins.username == admin_name, Admins.password == admin_word)).first()
     db_session.close()
     if user is not None:
         print("查询结果：", user.username, user.password)
-        return user.get_json()
-    return {}
+        return True
+    return False
 
 
 def getAllUsers():
@@ -128,6 +146,28 @@ def getAllUsers():
     if users is not None:
         for user in users:
             result.append(user.get_json())
+    return result
+
+
+def getAllMonitorData():
+    db_session = Session()  # 实例化一个session
+    videos = db_session.query(Datas).all()
+    db_session.close()
+    result = []
+    if videos is not None:
+        for video in videos:
+            result.append(video.get_json())
+    return result
+
+
+def getAllVideoData():
+    db_session = Session()  # 实例化一个session
+    datas = db_session.query(Video).all()
+    db_session.close()
+    result = []
+    if datas is not None:
+        for data in datas:
+            result.append(data.get_json())
     return result
 
 
@@ -214,6 +254,6 @@ def getSpO2ByUid(uid):
 
 
 if __name__ == '__main__':
-    print(isUser('liu', 123))
-
+    # print(isUser('liu', 123))
+    insertDatas(1, 'happy', 86, 15, 98, datetime.now())
     # print(getSpO2ByUid(1))

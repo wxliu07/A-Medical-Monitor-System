@@ -1,13 +1,13 @@
-from flask import *
-from utils import ServerConfig, Result
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
 import os
-import database
-# import core.main
-from werkzeug.utils import secure_filename
 import uuid
-from multiprocessing import Process, Queue
+
+from flask import *
+from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
+
+import database
+from utils import ServerConfig, Result
 
 serverConfig = ServerConfig()
 app = Flask(__name__)
@@ -67,10 +67,10 @@ def uploadFile():
     file_name = secure_filename(file.filename)
     if file_name == '':
         return Result.fail(desc="文件上传失败，文件名不合法")
-
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
     file.save(file_path)
-    task_id = str(uuid.uuid4())
+
+    task_id = str(uuid.uuid4())  # 生成唯一id
     return Result.success(data={"task_id": task_id}, desc="文件接收成功，开始处理")
 
 
@@ -86,18 +86,18 @@ def get_status(task_id: str):
 
 # 判断是否为用户
 @app.route('/api/database/isUser', methods=['GET'])
-def isUser():
+def checkIsUser():
     try:
-        print("request: ", request)
-        print("request.args", request.args)
         username = request.args.get('username')
         password = request.args.get('password')
+        print("username: " + str(username))
+        print("username: {}, password: {}".format(username, password))
         result = database.isUser(username, password)
-        if result is not None:
+        if result:
             print('查询成功')
             return Result.success(data=result, desc="查询成功")
         else:
-            print('查询失败, 不存在用户')
+            print('用户查询失败, 不存在用户')
             return Result.fail(desc="查询失败, 不存在此用户")
     except Exception as e:
         print(e)
@@ -106,16 +106,17 @@ def isUser():
 
 # 判断是否为管理员
 @app.route('/api/database/isAdmin', methods=['GET'])
-def isAdmin():
+def checkIsAdmin():
     try:
         username = request.args.get('username')
         password = request.args.get('password')
+        print("username: {}, password: {}".format(username, password))
         result = database.isAdmin(username, password)
-        if result is not None:
+        if result:
             print('查询成功')
             return Result.success(data=result, desc="查询成功")
         else:
-            print('查询失败, 不存在用户')
+            print('管理员查询失败, 不存在此管理员')
             return Result.fail(desc="查询失败, 不存在此用户")
     except Exception as e:
         print(e)
@@ -135,6 +136,31 @@ def getAllUsers():
         print(e)
         return Result.fail(desc="参数异常")
 
+
+@app.route('/api/database/getAllMonitorData', methods=['GET'])
+def getAllMonitorData():
+    try:
+        datas = database.getAllMonitorData()
+        if datas is not None:
+            return Result.success(data=datas, desc="用户成员获取成功")
+        else:
+            return Result.success(desc="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail(desc="参数异常")
+
+
+@app.route('/api/database/getAllVideoData', methods=['GET'])
+def getAllVideoData():
+    try:
+        videos = database.getAllVideoData()
+        if videos is not None:
+            return Result.success(data=videos, desc="用户成员获取成功")
+        else:
+            return Result.success(desc="数据为空")
+    except Exception as e:
+        print(e)
+        return Result.fail(desc="参数异常")
 
 # 通过uid获取用户的检测信息
 @app.route('/api/database/getMonitorDataByUid', methods=['GET'])
@@ -188,7 +214,7 @@ def getRrDataByUid():
         uid = request.args.get("uid")
         datas = database.getRrByUid(uid=uid)
         if datas is not None:
-            return Result.success(data=datas, desc="获取HR数据成功")
+            return Result.success(data=datas, desc="获取呼吸率成功")
         else:
             return Result.success(desc="数据为空")
     except Exception as e:
@@ -203,7 +229,7 @@ def getSpO2DataByUid():
         uid = request.args.get("uid")
         datas = database.getSpO2ByUid(uid=uid)
         if datas is not None:
-            return Result.success(data=datas, desc="获取HR数据成功")
+            return Result.success(data=datas, desc="获取血氧饱和度成功")
         else:
             return Result.success(desc="数据为空")
     except Exception as e:

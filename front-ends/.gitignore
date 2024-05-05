@@ -4,6 +4,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+VSCodeCounter/
+monitor-demo/node_modules
+
+
 core/models/*.pth
 core/models/*.dat
 core/models/*.pkl
@@ -15,13 +19,7 @@ core/video/*.hdf5
 # C extensions
 *.so
 
-core/video/DATA/
-core/video/JSON/
 *.mp4
-*.patch
-*.avi
-back-end/static/videos/*.avi
-
 
 # Distribution / packaging
 .Python

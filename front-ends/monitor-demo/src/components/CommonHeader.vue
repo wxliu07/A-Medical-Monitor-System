@@ -152,7 +152,7 @@ header {
   justify-content: flex-end;
 
   .el-input {
-    width: 200px; // 可根据需要调整宽度
+    width: 200px; 
   }
 
   .user {
