@@ -1,4 +1,5 @@
 import os
+import threading
 import uuid
 
 from flask import *
@@ -8,6 +9,8 @@ from werkzeug.utils import secure_filename
 
 import database
 from utils import ServerConfig, Result
+
+from core.main import *
 
 serverConfig = ServerConfig()
 app = Flask(__name__)
@@ -67,21 +70,33 @@ def uploadFile():
     file_name = secure_filename(file.filename)
     if file_name == '':
         return Result.fail(desc="文件上传失败，文件名不合法")
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
+    task_id = str(uuid.uuid4())  # 生成唯一id
+
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], task_id)
     file.save(file_path)
 
-    task_id = str(uuid.uuid4())  # 生成唯一id
+    # 在新线程中启动处理
+    thread = threading.Thread(target=process_video, args=(file_path, task_id, tasks))
+    thread.start()
+
     return Result.success(data={"task_id": task_id}, desc="文件接收成功，开始处理")
 
 
 # 获取文件处理状态
-@app.route('/status/<task_id>')
+@app.route('/status/<task_id>', methods=['GET'])
 def get_status(task_id: str):
     status, result = tasks.get(task_id, ("未知任务", None))
     if result is None:
         return Result.fail(desc="文件未处理完成")
     else:
         return Result.success(data={"status": status, "result": result}, desc="文件处理结束")
+
+
+def process_video(file_path, task_id, task_dict):
+    # Dummy processing logic
+    import time
+    time.sleep(5)  # Simulate a time-consuming task
+    task_dict[task_id] = ("完成", {"result": database.getAllMonitorData()[-2:]})  # Update the task status
 
 
 # 判断是否为用户
@@ -161,6 +176,7 @@ def getAllVideoData():
     except Exception as e:
         print(e)
         return Result.fail(desc="参数异常")
+
 
 # 通过uid获取用户的检测信息
 @app.route('/api/database/getMonitorDataByUid', methods=['GET'])

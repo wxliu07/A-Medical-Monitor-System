@@ -63,7 +63,9 @@
             </el-tab-pane>
 
             <el-tab-pane label="方法2" name="second">
-                <el-card shadow="always" class="method-card method2">
+                <el-card    v-loading="loading" 
+                            element-loading-text="文件处理中, 请等待..."
+                            shadow="always" class="method-card method2">
                     <el-text
                         class="mx-1 method-title"
                         type="primary"
@@ -120,7 +122,7 @@
                         </el-upload>
                     </div>
 
-                    <el-table :data="tableDataByUpload" border>
+                    <el-table :data="tableDataByUpload" :key="isUpdate" border>
                         <el-table-column
                             v-for="(val, key) in monitorTableLable"
                             :key="key"
@@ -162,6 +164,9 @@ export default {
             spo2: "SpO2",
             time: "Time",
         });
+
+        const loading = ref(false)
+        const isUpdate = ref(false)
 
         onMounted(() => {
             if (!navigator.mediaDevices.getUserMedia) {
@@ -247,7 +252,7 @@ export default {
         };
 
         const pagedTableData = ref();
-        const tableDataByUpload = ref();
+        const tableDataByUpload = ref([]);
 
         const uploadFileData = ref([]);
 
@@ -260,7 +265,6 @@ export default {
             uploadFileData.value = files; // 存储上传的文件列表
         };
 
-        // 上传文件
         // 上传文件
         const uploadFile = async () => {
             if (!uploadFileData.value || uploadFileData.value.length === 0) {
@@ -291,25 +295,57 @@ export default {
             }
         };
 
+        // 上传文件前
         const beforeUpload = (file) => {
             console.log(file);
+            loading.value = true;
         };
 
+        // 上传文件成功
         const handleUploadSuccess = (response, file, event) => {
-            console.log(response, file, event);
+            // console.log(response);
+            loading.value = true;
+            taskStatusPolling(response.data.task_id);  // 开始轮询
         };
 
+        // 上传文件失败
         const handleUploadError = (err, file, event) => {
             console.log(err, file, event);
         };
 
+        
+        // 轮询
+        const taskStatusPolling = (task_id) => {
+            const interval = setInterval(async () => {
+                try {
+                    const response = await axios.get(`http://127.0.0.1:5000/status/${task_id}`);
+                    console.log(response.data.code)
+                    let res = response.data
+                    if(response.data.code === 200) {
+                        loading.value = false; // 设置loading为false
+                        clearInterval(interval);
+                        console.log(res.data.result)
+                        tableDataByUpload.value.push(res.data.result)
+                        isUpdate.value = !isUpdate.value;
+                        console.log(tableDataByUpload.value)
+                    }
+                } catch (error) {
+                    console.error("Error fetching status:", error);
+                    clearInterval(interval);
+                }
+            }, 3000);  // Poll every 5 seconds
+        };
+        
+
         return {
+            loading,
             monitorTableLable,
             monitorDataByLoad,
             pagedTableData,
             tableDataByUpload,
             activeName,
             uploadFileData,
+            isUpdate,
 
             handleClick,
             handleFileUpload,
@@ -324,7 +360,7 @@ export default {
 
 <style scoped>
 .method-card {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     margin-right: 15px;
     box-shadow: 1px 4px 6px rgba(0, 0, 0, 0.1), 4px 1px 6px rgba(0, 0, 0, 0.1);
 }
@@ -355,6 +391,10 @@ video {
     width: 640px;  /* 或100%，根据需要调整 */
     height: 480px; /* 根据实际情况调整 */
     border: 1px solid #ccc; /* 增加边框看清楚视频是否被渲染 */
+}
+
+el-table {
+    height: 500px; /* 或其他足够显示所有数据的高度 */
 }
 
 

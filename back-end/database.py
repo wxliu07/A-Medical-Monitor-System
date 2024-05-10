@@ -173,7 +173,8 @@ def getAllVideoData():
 
 def getMonitorData(uid):
     db_session = Session()  # 实例化一个session
-    datas = db_session.query(Datas).filter(Datas.user_id == uid).all()
+    # datas = db_session.query(Datas).filter(Datas.user_id == uid).all()
+    datas = db_session.query(Datas).filter(Datas.user_id == uid).order_by(desc(Datas.time)).all()
     db_session.close()
     result = []
     if datas is not None:

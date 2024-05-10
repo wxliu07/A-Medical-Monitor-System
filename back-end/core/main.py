@@ -1,3 +1,4 @@
+import os
 from math import sqrt
 import cv2
 import numpy as np
@@ -8,20 +9,23 @@ from core.process.rr_monitor import get_face_landmarks, draw_ROI_line, get_avg_g
 from core.process.rr_monitor import _x1y1wh_to_xyxy, smooth_data
 from core.process.rr_monitor import infrared_preprocessing, eliminate_abnormal_peaks
 from database import insertDatas
-from process.signal_processing import SignalProcessing
+from core.process.signal_processing import SignalProcessing
 from scipy.signal import find_peaks
 from core.net.Siamfc import TrackerSiamFC
 import mediapipe as mp
 import multiprocessing
-from net.model_CNN import FaceCNN
+from core.net.model_CNN import FaceCNN
 
 from datetime import datetime
 
 import sys
 sys.path.append("..")  # 将上级目录添加到模块搜索路径中
 
-detection_model_path = 'models/caseharden_frontal_face_default.xml'
-classification_model_path = 'models/model_emotion.pkl'
+# detection_model_path = 'models/caseharden_frontal_face_default.xml'
+detection_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models'
+                                                                                '/caseharden_frontal_face_default.xml')
+# classification_model_path = 'models/model_emotion.pkl'
+classification_model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/model_emotion.pkl')
 face_detection = cv2.CascadeClassifier(detection_model_path)
 
 
@@ -143,7 +147,7 @@ def process_video(file_path, chunk_duration=10):
 
 
 # 目标追踪算法初始化
-model_path = 'models/model_siamfc.pth'
+model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models/model_siamfc.pth')
 trk = TrackerSiamFC(net_path=model_path)
 
 
