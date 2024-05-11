@@ -1,4 +1,3 @@
-import os
 import threading
 import uuid
 
@@ -34,15 +33,15 @@ UPLOAD_FOLDER_URL = os.path.abspath(os.path.dirname(__file__)) + '/static/videos
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER_URL
 
 # 上传文件的拓展名
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'mp4'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'mp4', 'avi'}
 
 # 存储任务状态和结果
 tasks = {}
 
 
 # 判断是否允许上传的类型
-def isFileAllow(filename: str) -> bool:
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 # 添加header解决跨域
@@ -70,13 +69,18 @@ def uploadFile():
     file_name = secure_filename(file.filename)
     if file_name == '':
         return Result.fail(desc="文件上传失败，文件名不合法")
+    if not allowed_file(file.filename):
+        return Result.fail(desc="文件上传失败，不支持的文件类型")
     task_id = str(uuid.uuid4())  # 生成唯一id
+    # 添加文件后缀名
+    file_extension = file_name.rsplit('.', 1)[1].lower()  # 获取文件后缀名
+    file_name = f"{task_id}.{file_extension}"  # 新的文件名
 
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], task_id)
+    file_path = os.path.join(app.config['UPLOAD_FOLDER'], file_name)
     file.save(file_path)
 
     # 在新线程中启动处理
-    thread = threading.Thread(target=process_video, args=(file_path, task_id, tasks))
+    thread = threading.Thread(target=process_file, args=(file_path, task_id, tasks))
     thread.start()
 
     return Result.success(data={"task_id": task_id}, desc="文件接收成功，开始处理")
@@ -92,11 +96,15 @@ def get_status(task_id: str):
         return Result.success(data={"status": status, "result": result}, desc="文件处理结束")
 
 
-def process_video(file_path, task_id, task_dict):
+def process_file(file_path, task_id, task_dict):
     # Dummy processing logic
-    import time
-    time.sleep(5)  # Simulate a time-consuming task
-    task_dict[task_id] = ("完成", {"result": database.getAllMonitorData()[-2:]})  # Update the task status
+    # import time
+    # time.sleep(5)  # Simulate a time-consuming task
+    process_results = process_video(file_path=file_path, chunk_duration=15)
+    for result in process_results:
+        database.insertDatas(user_id=1, emotion=result['emotion'], rr=result['rr'],
+                             hr=result['hr'], spo2=result['spo2'], time=result['time'])
+    task_dict[task_id] = ("完成", {"result": process_results})  # Update the task status
 
 
 # 判断是否为用户

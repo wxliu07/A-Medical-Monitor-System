@@ -6,7 +6,7 @@
             @tab-click="handleClick"
             type="border-card"
         >
-            <el-tab-pane label="方法1" name="first">
+            <!-- <el-tab-pane label="方法1" name="first">
                 <el-card shadow="always" class="method-card method1">
                     <el-text
                         class="mx-1 method-title"
@@ -41,7 +41,7 @@
                     </el-steps>
 
                     <div class="video-recorder">
-                        <!-- <video ref="videoElement" autoplay muted></video> -->
+             
                         <video src="" id="srcvideo" ></video>
                     </div>
 
@@ -60,9 +60,9 @@
                         ></el-table-column>
                     </el-table>
                 </el-card>
-            </el-tab-pane>
+            </el-tab-pane> -->
 
-            <el-tab-pane label="方法2" name="second">
+            <el-tab-pane label="方法2" name="first">
                 <el-card    v-loading="loading" 
                             element-loading-text="文件处理中, 请等待..."
                             shadow="always" class="method-card method2">
@@ -174,6 +174,7 @@ export default {
                 return;
             }
         
+            /*
             navigator.mediaDevices.getUserMedia({
                 video: true
             })
@@ -181,7 +182,7 @@ export default {
                 var srcvideo = document.getElementById("srcvideo")
                 srcvideo.srcObject = mediaStream;
                 srcvideo.play()
-            })
+            })*/
         });
         
 
@@ -303,7 +304,7 @@ export default {
 
         // 上传文件成功
         const handleUploadSuccess = (response, file, event) => {
-            // console.log(response);
+            console.log(response);
             loading.value = true;
             taskStatusPolling(response.data.task_id);  // 开始轮询
         };
@@ -388,8 +389,8 @@ export default {
 }
 
 video {
-    width: 640px;  /* 或100%，根据需要调整 */
-    height: 480px; /* 根据实际情况调整 */
+    width: 300px;  /* 或100%，根据需要调整 */
+    height: 350px; /* 根据实际情况调整 */
     border: 1px solid #ccc; /* 增加边框看清楚视频是否被渲染 */
 }
 
